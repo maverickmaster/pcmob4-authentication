@@ -9,10 +9,29 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
+import firebase from "../database/firebaseDB";
+
+const auth = firebase.auth();
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorText, setErrorText] = useState("");
+
+  function login() {
+    Keyboard.dismiss();
+    auth
+      .signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        console.log("Signed in!");
+        navigation.navigate("Chat");
+      })
+      .catch((error) => {
+        console.log("Error!");
+        console.log(error.message);
+        setErrorText(error.message);
+      });
+  }
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -38,9 +57,10 @@ export default function LoginScreen({ navigation }) {
           value={password}
           onChangeText={(input) => setPassword(input)}
         />
-        <TouchableOpacity onPress={null} style={styles.loginButton}>
+        <TouchableOpacity onPress={login} style={styles.loginButton}>
           <Text style={styles.buttonText}>Log in</Text>
         </TouchableOpacity>
+        <Text style={styles.errorText}>{errorText}</Text>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -83,5 +103,9 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     fontSize: 18,
+  },
+  errorText: {
+    color: "red",
+    height: 40,
   },
 });
