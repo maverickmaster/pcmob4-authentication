@@ -1,17 +1,11 @@
+import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
-//import LoginScreen from "./screens/LoginScreen";
-//import ChatScreen from "./screens/ChatScreen";
+import { createStackNavigator } from "@react-navigation/stack";
 
-function LoginScreen() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-    </View>
-  );
-}
+import LoginScreen from "./screens/LoginScreen";
+import ChatScreen from "./screens/ChatScreen";
 
 const Stack = createStackNavigator();
 
@@ -19,7 +13,8 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen component={LoginScreen} name="Login" />
+        <Stack.Screen component={ChatScreen} name="Chat" />
       </Stack.Navigator>
     </NavigationContainer>
   );

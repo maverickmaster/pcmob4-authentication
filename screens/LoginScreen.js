@@ -1,22 +1,25 @@
-//import React from "react";
-//import { Text, View, Button, Image } from "react-native";
-//import { createStackNavigator } from "@react-navigation/stack";
+import React from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 
-// function LoginScreen() {
-//   return (
-//     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-//       <Text>Login</Text>
-//     </View>
-//   );
-// }
+export default function LoginScreen({ navigation }) {
+  return (
+    <View>
+      <Text>Hello this is login</Text>
+    </View>
+  );
+}
 
-//const Stack = createStackNavigator();
-
-// export default function LoginScreen() {
-//   return (
-//     <Stack.Navigator>
-//       <Stack.Screen name="Login" component={LoginScreen} />
-//       <Stack.Screen name="Chat" component={ChatScreen} />
-//     </Stack.Navigator>
-//   );
-// }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
