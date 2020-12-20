@@ -10,17 +10,24 @@ import {
 import firebase from "../database/firebaseDB";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { GiftedChat } from "react-native-gifted-chat";
+
+const db = firebase.firestore().collection("messages");
 const auth = firebase.auth();
+
 export default function ChatScreen({ navigation }) {
   const [messages, setMessages] = useState([]);
+
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    // This is the listener for authentication
+    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
       if (user) {
         navigation.navigate("Chat");
       } else {
         navigation.navigate("Login");
       }
     });
+
+    // This sets up the top right button
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity onPress={logout}>
@@ -33,30 +40,44 @@ export default function ChatScreen({ navigation }) {
         </TouchableOpacity>
       ),
     });
-    setMessages([
-      {
-        _id: 1,
-        text: "Hello developer",
-        createdAt: new Date(),
-        user: {
-          _id: 288888888888888,
-          name: "React Native",
-          avatar: "https://placeimg.com/140/140/any",
-        },
-      },
-    ]);
-    return unsubscribe;
+
+    // This loads data from firebase
+    const unsubscribeSnapshot = db
+      .orderBy("createdAt", "desc")
+      .onSnapshot((collectionSnapshot) => {
+        const serverMessages = collectionSnapshot.docs.map((doc) => {
+          const data = doc.data();
+          console.log(data);
+          const returnData = {
+            ...doc.data(),
+            createdAt: new Date(data.createdAt.seconds * 1000), // convert to JS date object
+          };
+          return returnData;
+        });
+        setMessages(serverMessages);
+      });
+
+    return () => {
+      unsubscribeAuth();
+      unsubscribeSnapshot();
+    };
   }, []);
+
   function logout() {
     auth.signOut();
   }
-  function onSend(newMessages) {
-    setMessages([...newMessages, ...messages]);
+
+  function sendMessages(newMessages) {
+    console.log(newMessages);
+    const newMessage = newMessages[0];
+    db.add(newMessage);
+    //setMessages([...newMessages, ...messages]);
   }
+
   return (
     <GiftedChat
       messages={messages}
-      onSend={(newMessages) => onSend(newMessages)}
+      onSend={(newMessages) => sendMessages(newMessages)}
       renderUsernameOnMessage={true}
       listViewProps={{
         style: {
@@ -64,7 +85,9 @@ export default function ChatScreen({ navigation }) {
         },
       }}
       user={{
-        _id: 1,
+        _id: auth.currentUser.uid,
+        name: auth.currentUser.email,
+        avatar: "https://placeimg.com/140/141/any",
       }}
     />
   );
